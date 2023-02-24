@@ -1,0 +1,78 @@
+{
+  "kind": "attachments",
+  "data": [
+    {
+      "id": "IEACTCKNIYC547QV",
+      "authorId": "KUAFPVH4",
+      "name": "Courrier consultation type - DSF.docx",
+      "createdDate": "2019-06-17T09:34:34Z",
+      "version": 1,
+      "type": "DropBox",
+      "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "size": -1,
+      "taskId": "IEACTCKNKQK3IYFB",
+      "commentId": "IEACTCKNIMCSILQV",
+      "url": "https://www.dropbox.com/s/d5o3wvh1omes4wm/Courrier%20consultation%20type%20-%20DSF.docx?dl=0"
+    },
+    {
+      "id": "IEACTCKNIYC6UF6N",
+      "authorId": "KUAFPVH4",
+      "name": "C0202_N02-NOM_DU_PROJET_RACCO_Mandat_Special-Enedis.docx",
+      "createdDate": "2019-06-21T13:14:52Z",
+      "version": 1,
+      "type": "DropBox",
+      "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "size": -1,
+      "taskId": "IEACTCKNKQK445D4",
+      "url": "https://www.dropbox.com/s/7wezrdd62w3u5gt/C0202_N02-NOM_DU_PROJET_RACCO_Mandat_Special-Enedis.docx?dl=0"
+    },
+    {
+      "id": "IEACTCKNIYC6YW3X",
+      "authorId": "KUAFPVH4",
+      "name": "Pré-consultations_Coordonnées des services.xlsx",
+      "createdDate": "2019-06-24T07:14:04Z",
+      "version": 1,
+      "type": "DropBox",
+      "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": -1,
+      "taskId": "IEACTCKNKQK5XLW2",
+      "url": "https://www.dropbox.com/s/ufyklrn7rznnov3/Pr%C3%A9-consultations_Coordonn%C3%A9es%20des%20services.xlsx?dl=0"
+    },
+    {
+      "id": "IEACTCKNIYC6YW6N",
+      "authorId": "KUAFPVH4",
+      "name": "Pré-consultations_Fiche de suivi.xlsx",
+      "createdDate": "2019-06-24T07:14:51Z",
+      "version": 1,
+      "type": "DropBox",
+      "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": -1,
+      "taskId": "IEACTCKNKQK5XMAV",
+      "url": "https://www.dropbox.com/s/nlkjmlgpbi0uacc/Pr%C3%A9-consultations_Fiche%20de%20suivi.xlsx?dl=0"
+    },
+    {
+      "id": "IEACTCKNIYC7DZWP",
+      "authorId": "KUAFPVH4",
+      "name": "cerfa_11682-04.pdf",
+      "createdDate": "2019-06-26T13:17:18Z",
+      "version": 1,
+      "type": "DropBox",
+      "contentType": "application/pdf",
+      "size": -1,
+      "taskId": "IEACTCKNKQK637MD",
+      "url": "https://www.dropbox.com/s/klgklewjphu9rcf/cerfa_11682-04.pdf?dl=0"
+    },
+    {
+      "id": "IEACTCKNIYC7EIMX",
+      "authorId": "KUAFPVH4",
+      "name": "Exemple-CERFA 11682 - M2 complet.pdf",
+      "createdDate": "2019-06-26T14:36:53Z",
+      "version": 1,
+      "type": "DropBox",
+      "contentType": "application/pdf",
+      "size": -1,
+      "taskId": "IEACTCKNKQK637MD",
+      "url": "https://www.dropbox.com/s/mjahz2q08qfx2wi/Exemple-CERFA%2011682%20-%20M2%20complet.pdf?dl=0"
+    }
+  ]
+}

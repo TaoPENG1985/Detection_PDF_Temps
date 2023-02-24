@@ -1,0 +1,103 @@
+{
+  "kind": "attachments",
+  "data": [
+    {
+      "id": "IEACTCKNIYDFRENS",
+      "authorId": "KUAFPVH4",
+      "name": "Capture d’écran 2019-08-21 à 17.02.58.png",
+      "createdDate": "2019-08-21T15:07:53Z",
+      "version": 1,
+      "type": "Wrike",
+      "contentType": "image/png",
+      "size": 88714,
+      "taskId": "IEACTCKNKQLSRPFS",
+      "url": "https://storage.www.wrike.com/extfile/eyJ0IjoiZmExIiwiYWxnIjoiSFMyNTYiLCJjdHkiOiJhcHBsaWNhdGlvblwvanNvbiJ9.eyJhIjoyNzIyMTI1LCJyIjoiVVMiLCJleHAiOjE2NzczMzI1NTQsImlhdCI6MTY3NzI0NjE1NCwianRpIjoiMTA2NDY3NzYyIn0.Yf8SpZ5FVNTpJifHH3ravxTBRkQZFvZbylAUHmq2zWY/Capture+d%E2%80%99e%CC%81cran+2019-08-21+a%CC%80+17.02.58.png",
+      "width": 1478,
+      "height": 501
+    },
+    {
+      "id": "IEACTCKNIYDFRESN",
+      "authorId": "KUAFPVH4",
+      "name": "Capture d’écran 2019-08-21 à 17.08.21.png",
+      "createdDate": "2019-08-21T15:08:35Z",
+      "version": 1,
+      "type": "Wrike",
+      "contentType": "image/png",
+      "size": 16538,
+      "taskId": "IEACTCKNKQLSRPFS",
+      "url": "https://storage.www.wrike.com/extfile/eyJ0IjoiZmExIiwiYWxnIjoiSFMyNTYiLCJjdHkiOiJhcHBsaWNhdGlvblwvanNvbiJ9.eyJhIjoyNzIyMTI1LCJyIjoiVVMiLCJleHAiOjE2NzczMzI1NTQsImlhdCI6MTY3NzI0NjE1NCwianRpIjoiMTA2NDY3OTE3In0.6Cmbewv_BIWOuiC5DIBYbZDubInbXJvndm8GcjL1jDY/Capture+d%E2%80%99e%CC%81cran+2019-08-21+a%CC%80+17.08.21.png",
+      "width": 600,
+      "height": 169
+    },
+    {
+      "id": "IEACTCKNIYDFRFFX",
+      "authorId": "KUAFPVH4",
+      "name": "Capture d’écran 2019-08-21 à 17.04.17.png",
+      "createdDate": "2019-08-21T15:11:29Z",
+      "version": 1,
+      "type": "Wrike",
+      "contentType": "image/png",
+      "size": 31462,
+      "taskId": "IEACTCKNKQLSRPFS",
+      "url": "https://storage.www.wrike.com/extfile/eyJ0IjoiZmExIiwiYWxnIjoiSFMyNTYiLCJjdHkiOiJhcHBsaWNhdGlvblwvanNvbiJ9.eyJhIjoyNzIyMTI1LCJyIjoiVVMiLCJleHAiOjE2NzczMzI1NTQsImlhdCI6MTY3NzI0NjE1NCwianRpIjoiMTA2NDY4NTM1In0._I2-GgYlKCcx_2PGg6fPuctFLtdiqKNfT9azDo94wCM/Capture+d%E2%80%99e%CC%81cran+2019-08-21+a%CC%80+17.04.17.png",
+      "width": 1445,
+      "height": 225
+    },
+    {
+      "id": "IEACTCKNIYDFZVT5",
+      "authorId": "KUAFPVH4",
+      "name": "Capture d’écran 2019-08-23 à 07.42.49.png",
+      "createdDate": "2019-08-23T07:03:30Z",
+      "version": 1,
+      "type": "Wrike",
+      "contentType": "image/png",
+      "size": 299049,
+      "taskId": "IEACTCKNKQLTKLF6",
+      "url": "https://storage.www.wrike.com/extfile/eyJ0IjoiZmExIiwiYWxnIjoiSFMyNTYiLCJjdHkiOiJhcHBsaWNhdGlvblwvanNvbiJ9.eyJhIjoyNzIyMTI1LCJyIjoiVVMiLCJleHAiOjE2NzczMzI1NTQsImlhdCI6MTY3NzI0NjE1NCwianRpIjoiMTA2NzQ3NTE3In0.5OeImAvMXvtlqPIt4FSwOu69M5vUCA6X2x1Mt2uBwTc/Capture+d%E2%80%99e%CC%81cran+2019-08-23+a%CC%80+07.42.49.png",
+      "width": 2310,
+      "height": 1330
+    },
+    {
+      "id": "IEACTCKNIYDFZWCP",
+      "authorId": "KUAFPVH4",
+      "name": "Capture d’écran 2019-08-20 à 16.44.51.png",
+      "createdDate": "2019-08-23T07:12:21Z",
+      "version": 1,
+      "type": "Wrike",
+      "contentType": "image/png",
+      "size": 9958,
+      "taskId": "IEACTCKNKQLTKNPM",
+      "url": "https://storage.www.wrike.com/extfile/eyJ0IjoiZmExIiwiYWxnIjoiSFMyNTYiLCJjdHkiOiJhcHBsaWNhdGlvblwvanNvbiJ9.eyJhIjoyNzIyMTI1LCJyIjoiVVMiLCJleHAiOjE2NzczMzI1NTQsImlhdCI6MTY3NzI0NjE1NCwianRpIjoiMTA2NzQ3OTgzIn0.AANAzIwjeJTFZgspxqfH2MUBREZrzJ6GQt09e4lY7d4/Capture+d%E2%80%99e%CC%81cran+2019-08-20+a%CC%80+16.44.51.png",
+      "width": 381,
+      "height": 82
+    },
+    {
+      "id": "IEACTCKNIYDFZWCQ",
+      "authorId": "KUAFPVH4",
+      "name": "Capture d’écran 2019-08-20 à 16.44.58.png",
+      "createdDate": "2019-08-23T07:12:21Z",
+      "version": 1,
+      "type": "Wrike",
+      "contentType": "image/png",
+      "size": 9924,
+      "taskId": "IEACTCKNKQLTKNPM",
+      "url": "https://storage.www.wrike.com/extfile/eyJ0IjoiZmExIiwiYWxnIjoiSFMyNTYiLCJjdHkiOiJhcHBsaWNhdGlvblwvanNvbiJ9.eyJhIjoyNzIyMTI1LCJyIjoiVVMiLCJleHAiOjE2NzczMzI1NTQsImlhdCI6MTY3NzI0NjE1NCwianRpIjoiMTA2NzQ3OTg0In0.MZZun5-LaRnDGJ21zVdZTiDm3ncvG_EnQleTcRMVN08/Capture+d%E2%80%99e%CC%81cran+2019-08-20+a%CC%80+16.44.58.png",
+      "width": 386,
+      "height": 84
+    },
+    {
+      "id": "IEACTCKNIYDFZWCR",
+      "authorId": "KUAFPVH4",
+      "name": "Capture d’écran 2019-08-20 à 16.45.19.png",
+      "createdDate": "2019-08-23T07:12:21Z",
+      "version": 1,
+      "type": "Wrike",
+      "contentType": "image/png",
+      "size": 7393,
+      "taskId": "IEACTCKNKQLTKNPM",
+      "url": "https://storage.www.wrike.com/extfile/eyJ0IjoiZmExIiwiYWxnIjoiSFMyNTYiLCJjdHkiOiJhcHBsaWNhdGlvblwvanNvbiJ9.eyJhIjoyNzIyMTI1LCJyIjoiVVMiLCJleHAiOjE2NzczMzI1NTQsImlhdCI6MTY3NzI0NjE1NCwianRpIjoiMTA2NzQ3OTg1In0.X6NXGkYNLNZ9Hhiy1vfSWA0hTTxirAMTBoIQ33x5iRM/Capture+d%E2%80%99e%CC%81cran+2019-08-20+a%CC%80+16.45.19.png",
+      "width": 398,
+      "height": 85
+    }
+  ]
+}
