@@ -16,43 +16,43 @@ def get_text_to_df(nomfile):
     json_df_lesProjet = json.loads(str_json_df_lesProjet)
     return pd.read_json(json_df_lesProjet,encoding="utf-8", orient='records')
 # ===================================================================
-# recuperer projet dans 0032, attachements des Wrike,  Tahce de 0032
+# recuperer projet dans 0032, attachements dans Wrike,  Tache de 0032
 # ===================================================================
 df_projet = get_text_to_df(r'Resultat\res_001_Projet0032.txt')
 df_attachement =  get_text_to_df( r'Resultat\res_002_attachement.txt')
 df_Tahce = get_text_to_df( r'Resultat\res_003_id_nom_Tahce.txt')
 
 # ===================================================================
-# pre-Filtrez les tache: si une tache contient des mot cle, elle est valide
+# pre-Filtrez les taches: si une tache contient des mot cle, elle est valide
 # ===================================================================
-# for key_tache,row_tache in df_Tahce.iterrows():
-#     print(key_tache)
-#     for key_tacheV,cleTacheV in dic_nomTacheV_cleTacheV.items():
-#         if cleTacheV.upper() in row_tache["nom_parent"].upper():
-#             df_Tahce.loc[key_tache,"valide"] = 1
-#             break
-# df_Tahce = df_Tahce.drop(df_Tahce[(df_Tahce['valide'] != 1)].index) 
-# # observer 
-# with open("OB_003_attachement_1.csv","w",encoding="utf-8") as f:
-#     f.write(df_attachement.to_csv(index=None,line_terminator="\n"))
+for key_tache,row_tache in df_Tahce.iterrows():
+    print(key_tache)
+    for key_tacheV,cleTacheV in dic_nomTacheV_cleTacheV.items():
+        if cleTacheV.upper() in row_tache["nom_parent"].upper():
+            df_Tahce.loc[key_tache,"valide"] = 1
+            break
+df_Tahce = df_Tahce.drop(df_Tahce[(df_Tahce['valide'] != 1)].index) 
+# observer 
+with open("OB_003_attachement_1.csv","w",encoding="utf-8") as f:
+    f.write(df_attachement.to_csv(index=None,line_terminator="\n"))
 
 # ===================================================================
 # pre-Filtrez les attachement: Si l'identifiant de leur père (tâche) est en 0032, 
 # si oui , gardez-le; si non, le supprimer. 
 # ===================================================================
-# for key_attachement,row_attachement in df_attachement.iterrows():
-#     index_parentID = df_Tahce[(df_Tahce.id_parent==row_attachement["id_parent"])].index.tolist()
-#     df_attachement.loc[key_attachement,"valide"] = len(index_parentID)
-# df_attachement = df_attachement.drop(df_attachement[(df_attachement['valide'] != 1)].index) 
-# df_attachement.reset_index(drop=True, inplace=True)
-# # observer 
-# with open("OB_003_attachement_1.csv","w",encoding="utf-8") as f:
-#     f.write(df_attachement.to_csv(index=None,line_terminator="\n"))
+for key_attachement,row_attachement in df_attachement.iterrows():
+    index_parentID = df_Tahce[(df_Tahce.id_parent==row_attachement["id_parent"])].index.tolist()
+    df_attachement.loc[key_attachement,"valide"] = len(index_parentID)
+df_attachement = df_attachement.drop(df_attachement[(df_attachement['valide'] != 1)].index) 
+df_attachement.reset_index(drop=True, inplace=True)
+# observer 
+with open("OB_003_attachement_1.csv","w",encoding="utf-8") as f:
+    f.write(df_attachement.to_csv(index=None,line_terminator="\n"))
 
 # ===================================================================
 # les preparation avant la combination
 # ===================================================================
-p1 = re.compile(r'[[](.*?)[]]', re.S) # preparer un instance de 《re》 pour recuprer les text dans [] 
+p1 = re.compile(r'[[](.*?)[]]', re.S) # preparer un instance de 《re》 pour recuperer les text dans [] 
 
 dic_champs_cible_newNom = {     "nom projet":"nom projet",
                                 'work_Id':"work_Id",
@@ -77,6 +77,8 @@ dic_champs_cible_newNom = {     "nom projet":"nom projet",
                                 "Validité":"Validite",
                                 "Réception DAACT":"Reception DAACT",
 
+                                # jouter selon commentaires de A001
+
 }
 
 # ===================================================================
@@ -97,19 +99,19 @@ index_df_exception = 0
 
 for key,value in dic_nomTacheV_cleTacheV.items(): # parcourir
     df_res["NB_"+key] = 0 # comiben de attchement dans ce tache
-    df_res["conf_"+key] = 0 #
-    df_res["perM_"+key] = nan #
-    df_res["url_"+key] = nan #
-    df_res["Nom_"+key] = nan #
-    df_res["createdDate_"+key] = nan #
+    df_res["conf_"+key] = 0 # comiben de attchement conforme dans ce tache
+    df_res["perM_"+key] = nan # lien de tache
+    df_res["url_"+key] = nan # lien de attchement
+    df_res["Nom_"+key] = nan # nom de attchement
+    df_res["createdDate_"+key] = nan # date de creation de attchement
 
 # ===================================================================
-# Traverser/parcourir toutes les attachements, puis remolire <df_res>
+# Traverser/parcourir toutes les attachements, puis remplir <df_res>
 # ===================================================================
 for key_attachement,row_attachement in df_attachement.iterrows():
     try:
         # ===================================================================
-        # Obtenez le nom de la pièce jointe, l'index/le nom/le lien de la tâche attachée à la pièce jointe.
+        # Obtenez le nom de la pièce jointe, l'index/le nom/le lien de la tâche  à la quelle cette Pj est attachée.
         # ===================================================================
         # get : nom de la pièce jointe
         nom_attachement = row_attachement['nom_attachement']
@@ -119,7 +121,7 @@ for key_attachement,row_attachement in df_attachement.iterrows():
         link_Tache = df_Tahce["permalink"][index_Tache]
 
         # ===================================================================
-        # analyse le nom de la tache, est que il contien des mots cle des <tache_resume>
+        # analyse le nom de la tache, est ce que il contien des mots cle des <tache_resume>
         # selon le dictionnaire <dic_nomTacheV_cleTacheV> 
         # si il y a multipe tache_resume, prendre 1er
         # si rien , tache_resume = nan
@@ -139,7 +141,9 @@ for key_attachement,row_attachement in df_attachement.iterrows():
         # ===================================================================  
         if not pd.isna(tache_resume):
             # ===================================================================
-            # get (1) nom (2) index de projet, (3) Augmentez 1 de le nombre de pièces jointes (4)get lien de tache
+            # get (1) nom et (2) index de projet, 
+            # (3) Augmentez de 1 le nombre de pièces jointes pour cette tache pour ce projet 
+            # (4)get lien de tache
             # ===================================================================  
             nomProjet_from_tache = re.findall(p1,nom_Tache)[0]  # get nom de projet (le nom de tache contient son son de projet dans [])
             indexProjet = df_projet[df_projet['nom projet']== nomProjet_from_tache].index.tolist()             # get index de projet
@@ -158,22 +162,22 @@ for key_attachement,row_attachement in df_attachement.iterrows():
                     flag_validation_CLE_attechement = True
             if not flag_validation_CLE_attechement:
                 flag_validation_attechement = False
-            # (2) control nom_extension 
+            # (2) controle nom_extension 
             nom_extension = re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", row_attachement['nom_attachement']).strip(" ").split(".")[-1]
             if not (nom_extension.lower() in ['pdf',"doc","xls","ods","zip"]):
                 flag_validation_attechement = False
-            # (3) control nom de url
+            # (3) controle nom de url
             if not ("storage.www.wrike.com" in row_attachement['url']):
                 flag_validation_attechement = False
 
             # ===================================================================
             # si cette attachement est conforme, 
-            # (1) Augmentez le nombre de pièces jointes conformes 1
-            # (2) mis a jour la <createdDate> de cette tache_resume，le nom de cette attachement,
-            #    la lien de telechargement de  cette attachement
+            # (1) Augmentez de 1 le nombre de pièces jointes conformes 
+            # (2) mis a jour la <createdDate> de cette tache_resume，le nom de cette attachement, la lien de telechargement de cette attachement
+            # si plusieurs attachements, prendre le plus récent
             # ===================================================================   
             if flag_validation_attechement:
-                # (1) Augmentez le nombre de pièces jointes conformes 1
+                # (1) Augmentez le nombre de pièces jointes conformes de 1
                 df_res.loc[indexProjet, "conf_"+tache_resume] = 1 + df_res["conf_"+tache_resume][indexProjet]
                 # (2) mis a jour la <createdDate> de cette tache_resume，le nom de cette attachement,
                 #       la lien de telechargement de  cette attachement

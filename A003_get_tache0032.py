@@ -6,13 +6,13 @@ from pandas.core.frame import DataFrame
 from cmath import nan
 
 # ===================================================================
-# Les parametres
+# preparer les parametres
 # ===================================================================
 myToken = "eyJ0dCI6InAiLCJhbGciOiJIUzI1NiIsInR2IjoiMSJ9.eyJkIjoie1wiYVwiOjI3MjIxMjUsXCJpXCI6ODM5MzMyMixcImNcIjo0NjM1NDQxLFwidVwiOjE0ODk5ODQzLFwiclwiOlwiVVNcIixcInNcIjpbXCJXXCIsXCJGXCIsXCJJXCIsXCJVXCIsXCJLXCIsXCJDXCIsXCJEXCIsXCJNXCIsXCJBXCIsXCJMXCIsXCJQXCJdLFwielwiOltdLFwidFwiOjB9IiwiaWF0IjoxNjY0NzgzNzg3fQ.bJxVIxGToNC5RLHamvi8Ckj--Ug2-LSp2Kf0d9DS8Nc"
 url = 'https://www.wrike.com/api/v4'
 
 # ===================================================================
-# recuprer les taches dans 0032
+# recuperer les taches dans 0032
 # ===================================================================
 df_res = DataFrame()
 id_projet_0032 = "IEACTCKNI4LT5UCB"

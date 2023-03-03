@@ -119,7 +119,7 @@ def main():
     reponse = requests.get(url + "/customfields",   
                     headers = {'Authorization':  'bearer ' + myToken },)
         # ==========================================
-        # get id des champs, en verifiant les champs cible 
+        # get id des champs, en verifiant les champs cibles 
         # ==========================================
     reponse_id_nom_champs =reponse.json()['data']
     dic_id_nom_champs ={i["id"]:i["title"] for i in  reponse_id_nom_champs  if i["title"] in listChampsCibles}
@@ -132,7 +132,7 @@ def main():
 #     print(log_champs_non_trouve)
 
     # ==========================================
-    # get les projet de 0032 par API,
+    # get les projets de 0032 par API,
     # ==========================================
     id_dossier_0032 = "IEACTCKNI4LT5UCB"
     reponse = requests.get(url + '/folders/'   + id_dossier_0032 +"/folders" + "?project=true&fields=[customFields]", 
@@ -162,7 +162,7 @@ def main():
             print(i["title"]) 
 
     # ==========================================
-    # get nom de dev 
+    # get nom de responsable dev 
     # ==========================================
     df_table['Responsable Dev ID'] = df_table['Responsable Dev'][:]
     df_table['Responsable Dev'] = ''

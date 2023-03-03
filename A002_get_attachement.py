@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import time
 
 # ===================================================================
-# Les parametres
+# preparation des parametres
 # ===================================================================
 myToken = "eyJ0dCI6InAiLCJhbGciOiJIUzI1NiIsInR2IjoiMSJ9.eyJkIjoie1wiYVwiOjI3MjIxMjUsXCJpXCI6ODM5MzMyMixcImNcIjo0NjM1NDQxLFwidVwiOjE0ODk5ODQzLFwiclwiOlwiVVNcIixcInNcIjpbXCJXXCIsXCJGXCIsXCJJXCIsXCJVXCIsXCJLXCIsXCJDXCIsXCJEXCIsXCJNXCIsXCJBXCIsXCJMXCIsXCJQXCJdLFwielwiOltdLFwidFwiOjB9IiwiaWF0IjoxNjY0NzgzNzg3fQ.bJxVIxGToNC5RLHamvi8Ckj--Ug2-LSp2Kf0d9DS8Nc"
 url = 'https://www.wrike.com/api/v4'
@@ -17,8 +17,8 @@ id_robot = 'KUAKER7X'
 
 # ===================================================================
 # Recuperer les meta data sur les attchements de Wrike
-# une requete retourne au plus les data de  30 jour plus recent, donc
-# il faut que filter par temps (createdDate) pour recouperer tous les 
+# une requete retourne au plus les datas de  30 jours plus recent, donc
+# il faut les filtrer par temps (createdDate) pour recuperer tous les 
 # attchements apres une date (date_plusAcien)
 # ===================================================================
 mydelta = timedelta(days=29)
@@ -41,7 +41,7 @@ print(list_temps)
 
 
 # =====================================================
-# les API sont lances, les meta data des attchement sont mises dans 
+# les API sont lances, les meta data des attchement sont mises dans le dataframe
 # ====================================================
 df_res = DataFrame()
 index = 0
@@ -56,7 +56,7 @@ for temps in list_temps:
     with open(r"Observation\all_attchements" +temps[9:16]+".txt","w",encoding="utf-8") as f:
         f.write(reponse.text)
     for courrent_attachement in reponse.json()['data']:     # parcourir dans une reponse de API
-        if courrent_attachement['authorId'] != id_robot: # ici , les ficher de robot sont ignores
+        if courrent_attachement['authorId'] != id_robot: # ici , les fichiers du robot sont ignores
             try:
                 df_res.loc[index,"id_parent"] = courrent_attachement['taskId']
                 df_res.loc[index,"id_attachement"] = courrent_attachement['id']
