@@ -16,7 +16,7 @@ def get_text_to_df(nomfile):
     json_df_lesProjet = json.loads(str_json_df_lesProjet)
     return pd.read_json(json_df_lesProjet,encoding="utf-8", orient='records')
 # ===================================================================
-# recuperer projet dans 0032, attachements des Wrike,  Tahce de 0032
+# recuperer projet dans 0032, attachements dans Wrike,  Tahce de 0032
 # ===================================================================
 df_projet = get_text_to_df(r'Resultat\res_001_Projet0032.txt')
 df_attachement =  get_text_to_df( r'Resultat\res_002_attachement.txt')

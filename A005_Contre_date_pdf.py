@@ -32,7 +32,7 @@ for tache_resume in dic_nomTacheV_cleAttchementV.keys():
 
 
 # ===================================================================
-# control: date de fin chantier <-> pdf - > date
+# date de fin chantier <-> pdf - > date prededent
 # ===================================================================
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
     list_champ_ayantValeur = []
@@ -58,7 +58,7 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
                 df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
             if row_projet["conf_"+i] == 0:
                 df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # date - > date
+    # date - > date precedents
         for j in list_date_ayantValeur:
             if pd.isna(row_projet[j]):
                 df_projet_lien.loc[key_projet,j] = "❌ fin_Chantier"
@@ -74,7 +74,7 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
                 df_projet_lien.loc[key_projet,"date_fin_Chantier"] = "❌ fichiers"
 
 # ===================================================================
-# date debut chantier -> pdf ->date
+# date debut chantier -> pdf ->date precedents 
 # ===================================================================
 list_champ_ayantValeur = ["DOC"]
 list_date_ayantValeur =["date_Accord","date_PMBAIL"]
@@ -91,19 +91,14 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
             if pd.isna(row_projet[j]):
                 df_projet_lien.loc[key_projet,j] = "❌ debut_Chantier"   
 
-
 # ===================================================================
-# control depuis Accord (avant date Accord) double sens
+#Accord (avant date Accord) <-> pdf - > date precedents 
 # ===================================================================
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
     list_champ_ayantValeur = []
     list_date_ayantValeur =["date_PMBAIL"]
-
-   # ==================================
-    # de date - > champs
-    # ===================================
+    # de date - > pdf
     if not pd.isna(row_projet["date_Accord"]):
-
         list_champ_ayantValeur +=["PMBAIL"]
         if "PC" == row_projet["Type (AU)"]:
             list_champ_ayantValeur += ["PRODPC","ARRETEPC"]
@@ -111,23 +106,17 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
             list_champ_ayantValeur += ["PRODDP","ARRETEDP"]
         elif "PC+DP" == row_projet["Type (AU)"]:
             list_champ_ayantValeur += ["PRODPC","ARRETEPC"] + ["PRODDP","ARRETEDP"]
-        
         for i in list_champ_ayantValeur:
             if row_projet["NB_"+i] == 0:
                 df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
             if row_projet["conf_"+i] == 0:
                 df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # ==================================
-    # de date - > date
-    # ===================================
-        
+    # date - > date precedents 
         for j in list_date_ayantValeur:
             if pd.isna(row_projet[j]):
                 df_projet_lien.loc[key_projet,j] = "❌ Accord"   
         
-    # ==================================
-    # de champs a date
-    # ===================================     
+    # pdf -> date precedents 
     if "PC" == row_projet["Type (AU)"]:
         if row_projet["NB_"+"PRODPC"] > 0 and  row_projet["NB_"+"ARRETEPC"] > 0:
             if pd.isna(row_projet["date_Accord"]):
@@ -145,17 +134,13 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
                     df_projet_lien.loc[key_projet,"date_Accord"] = "❌ selon fichiers"
 
 # ===================================================================
-# control depuis Accord (6 mois apres date Accord)  sens unique
+#  Accord (6 mois apres date Accord)  -> pdf
 # ===================================================================
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
     list_champ_ayantValeur = []
-   # ==================================
-    # de date - > champs
-    # ===================================
+    # de date - > pdf
     if not pd.isna(row_projet["date_Accord"]):
-        
         list_champ_ayantValeur = []
-
         if not("❌" in row_projet["date_Accord"]) and len(row_projet["date_Accord"]) > 1:
             timeStamp = datetime.strptime(row_projet["date_Accord"], "%Y-%m-%d")
             timeStamp_dans6mois = timeStamp + dt.timedelta(days = 180)
@@ -175,50 +160,39 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
             if row_projet["conf_"+i] == 0:
                 df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
 
-
 # ===================================================================
-# control depuis date PMbail, double sens
+# date PMbail <-> pdf
 # ===================================================================
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
-    # ===================================================================
-    # de temps a date
-    # ===================================================================    
+    # date -> pdf
     if not pd.isna(row_projet["date_PMBAIL"]):
         for i in ["PMBAIL"]:
             if row_projet["NB_"+i] == 0:
                 df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
             if row_projet["conf_"+i] == 0:
                 df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # ===================================================================
-    # de  date a temps
-    # ===================================================================        
+    # pdf - > date
     if row_projet["conf_PMBAIL"] > 0:
         if pd.isna(row_projet["date_PMBAIL"]):
             df_projet_lien.loc[key_projet,"date_PMBAIL"] = "❌ selon fichiers"
 
 # ===================================================================
-# control depuis date Bail , n s'aigit pas de atutre groupes , double sens
+# date Bail <-> pdf , si Bail n'est pas vide, l'eurrer dans date PMBAIL est supprimée
 # ===================================================================
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
-    # ===================================================================
-    # de date a champs
-    # ===================================================================    
+    # date -> pdf
     if not pd.isna(row_projet["date_BAIL"]):
         for i in ["SBN"]:
             if row_projet["NB_"+i] == 0:
                 df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
             if row_projet["conf_"+i] == 0:
                 df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # ===================================================================
-    # de  champs a date
-    # ===================================================================        
+    # pdf -> date
     if row_projet["conf_SBN"] >0:
         if pd.isna(row_projet["date_BAIL"]):
             df_projet_lien.loc[key_projet,"date_BAIL"] = "❌ selon fichiers"
 
-    # ===================================================================
-    # si Bail n'est pas vide, l'eurrer dans date PMBAIL est supprimée 
-    # =================================================================== 
+    # si Bail n'est pas vide, l'eurrer dans date PMBAIL est supprimée (L'erreur est pardonnée)
     if not pd.isna(row_projet["date_BAIL"]):
         if not "❌" in row_projet["date_BAIL"]:
             if not pd.isna(row_projet["date_PMBAIL"]):      
@@ -226,16 +200,15 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
                     df_projet_lien.loc[key_projet,"date_PMBAIL"] = "Exempt_Bail"
 
 # ===================================================================
-# control prorog 1pc 2pc
+#  2pc -> 1pc, 1pc -> PRODPC,ARRETEPC, flag pour 1pc 2pc
 # ===================================================================
 list_prorog_1PC = {"PROROG1PC","PROROGCONSTAT1PC","PROROGCNR1PC"}
 list_prorog_2PC = {"PROROG2PC","PROROGCONSTAT2PC","PROROGCNR2PC"}
 
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
-
-    # ===================================================================
-    #  2PC => 1PC, 
-    # ===================================================================
+    # 2pc -> 1pc
+    # Si l'une des valeurs du list_prorog_2PC existe, 
+    # les valeurs du list_prorog_1PC doivent toutes être remplies.
     flag_2PC = False
     for i in list_prorog_2PC:
         if row_projet["NB_"+i] > 0:
@@ -247,9 +220,9 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
                 df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
             if row_projet["conf_"+i] == 0:
                 df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # ===================================================================
-    #   1PC => PRODPC,ARRETEPC
-    # ===================================================================
+    # 1pc -> PRODPC,ARRETEPC 
+    # Si l'une des valeurs du list_prorog_1PC ou list_prorog_2PC existe, 
+    # les valeurs du PRODPC,ARRETEPC doivent toutes être remplies.
     flag_1PC = flag_2PC
     for i in list_prorog_1PC:
         if row_projet["NB_"+i] > 0:
@@ -261,22 +234,17 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
                     df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
                 if row_projet["conf_"+i] == 0:
                     df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # ===================================================================
-    #  FLAG 1_2_pc
-    # ===================================================================
+    #  FLAG 1_2_pc, pour filtrage dans PowerBi
     df_projet_lien.loc[key_projet,"flag_1_2_pc"] = str(flag_1PC)
 
 # ===================================================================
-# control prorog 1dp 2dp
+# 2dp -> 1dp, 1dp -> PRODP,ARRETEDP,flag pour 1_2_dp
 # ===================================================================
 list_prorog_1DP = {"PROROG1DP","PROROGCONSTAT1DP","PROROGCNR1DP"}
 list_prorog_2DP = {"PROROG2DP","PROROGCONSTAT2DP","PROROGCNR2DP"}
 
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
-
-    # ===================================================================
     #  2DP => 1DP, 
-    # ===================================================================
     flag_2DP = False
     for i in list_prorog_2DP:
         if row_projet["NB_"+i] > 0:
@@ -288,9 +256,7 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
                 df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
             if row_projet["conf_"+i] == 0:
                 df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # ===================================================================
-    #   1DP => PRODP,ARRETEDP
-    # ===================================================================
+    #  1DP => PRODP,ARRETEDP
     flag_1DP = flag_2DP
     for i in list_prorog_1DP:
         if row_projet["NB_"+i] > 0:
@@ -329,8 +295,12 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
         for resume in value: 
             if row_projet["NB_"+resume] > 0:
                 df_projet_lien.loc[key_projet,"flag_"+key] = "True"
+
+
+
 # ===================================================================
-# pour tous  1 
+#  pour fichier_  (lien ) ： si > 1, num ⚠️ ; = 1, 1 🔗; = 0, nan
+#  pour tache_  (lien)： si > 1, num ⚠️ ; = 1, 1 ✅; = 0, nan
 # ===================================================================
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
     for tache_resume in dic_nomTacheV_cleAttchementV.keys():
@@ -347,8 +317,11 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
             df_projet_lien.loc[key_projet,"tache_"+tache_resume] = "1 ✅"
         elif row_projet["NB_"+tache_resume] > 1:
             df_projet_lien.loc[key_projet,"tache_"+tache_resume] =  str(row_projet["NB_"+tache_resume]) +" ⚠️"
+
+
 # ===================================================================
-# par tous 2, CS DP RR 
+# creer um champs <projet type> dont valeur sont  ： normal CS DP RR 
+# pour CS DP RR, certains pdf manquants sont autorisés
 # ===================================================================
 list_tache_resume_AP = "PRODPC,ARRETEPC,CONSTATPC,CNRPC," + \
                     "PRODDP,ARRETEDP,CONSTATDP,CNRDP," + \
@@ -404,7 +377,7 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
     # df_res["createdDate_"+key] = nan
 
 # ===================================================================
-# change format du temp ttmmdd -> dd mm tt
+# change format du temp tt mm dd -> dd mm tt
 # ===================================================================
 list_date_champs =["date_Accord","+6mois","date_PMBAIL","date_fin_Chantier",\
                      "date_BAIL","date_debut_Chantier","date accord (PCM1)",
