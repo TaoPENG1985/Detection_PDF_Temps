@@ -29,8 +29,84 @@ def main():
         'Productible kWh/kWc (V2 Solargis)','Productible kWh/kWc (V3 Solargis)',
         'Productible kWh/kWc (V4 Solargis)','Adresse (Projet)','Type (AU)','📆 Signature Bail',
         "Date accord (PCM1)","Date accord (PCM2)","Date accord (PCM3)","Date accord (Transf PC)",
-        "📅  Date accord (Transf DP)","Validité","Réception DAACT"
+        "📅  Date accord (Transf DP)","Validité","Réception DAACT","Date paiement acompte (PTF)",
+        "Date réception (CARDI)","date signature CA","Date (Consuel)"
         ]
+    
+    '''
+    1 tableau
+        (1)   'Type (Tarif)-V2' - >filtage (un de AO CRE, AO CRE Innovation),
+        (2)     'Date dépôt AO' <-> DOSSIERAO
+                    -> tous les date precedentes
+        (3) '📆 Date (T0)' <-> LAUREAT
+                    - >   'Date dépôt AO'        
+                    -> tous les date precedentes
+        (4) LAUREAT - > DOSSIERAO
+    '''
+
+    '''
+    2 tableau pour OA (Type (Tarif)-V2')
+        (0) affichage '📆 Date (Demande Racco)', sans controle
+        (1)   '📆 Date (T0)' <->"DDROA"
+                                        -> tous les date precedentes
+
+    atache 4e tableau
+    '''
+
+    '''
+    3 tableau pour CRE (Type (Tarif)-V2')
+        (0) affichage '📆 Date (T0)', sans controle
+        (1)   '📆 Date (Demande Racco)' <->"DDRCRE"
+                                        -> tous les date precedentes
+    
+    attcher 4e tableau
+    '''
+
+    '''
+    4 page
+        (0) sans affichage. sans filtrage
+        (1) Date Réception PTF  <-> PTF
+            -> tous les date precedentes
+        (2)'📆 Date réception CR(D)' < - > "CRD"
+            -> tous les date precedentes
+        (3) il y  pas de control entre Date Réception PTF, '📆 Date réception CR(D)'
+        (4) "Date paiement acompte (PTF)" <-> ACOMPTEPTF
+            -> tous les date precedentes
+        (5)'Date paiement acompte ( CR(D) )' <-> ACOMPTECRD
+            -> tous les date precedentes
+        (6) il y  pas de control entre (4) (5)
+    '''
+
+    '''
+    5 page
+       (1) Date réception (CARDI) <-> "CARDI"
+                -> tous les date precedentes
+        (2) 'Date MES'  <-> "MES"
+                ->"CONSUELV1" ou "CONSUELV2","DOEV1"ou "DOEV2","PVRV1" ou "PVRV2"
+                -> tous les date precedentes
+        (3) "date signature CA" <-> "CONTRATHA"
+                -> tous les date precedentes
+    
+    '''
+
+    '''
+    6 page 
+        (0) si ,"DOEV2" ou"DOEV1" -> '📅 GO CONSTRUCTION'
+        () "DOEV1" -> not "DOEV2" ,"DOEV2" -> not "DOEV1"
+        () PVRV1 -> not PVRV2, PVRV2 -> not PVRV1
+        (1) Date (Consuel) < - > existance un entre "CONSUELV1" et "CONSUELV2" 
+                                -> tous les date precedentes (sauf MES et )
+        (2) "CONSUELV1" - > not "CONSUELV2" 
+        (3) "CONSUELV2" -> not "CONSUELV1"
+        (4) affichage 'Date (Fin Chantier)'
+
+    '''
+
+    '''
+    7 page tout champs
+    les segement a cote 
+    '''
+
     # ==========================================
     # preparation des parametres
     # ==========================================

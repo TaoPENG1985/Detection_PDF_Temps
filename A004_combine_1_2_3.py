@@ -8,72 +8,60 @@ import re
 from datetime import datetime
 from P000_dic_tache_attahement_chemin import *
 # ===================================================================
-# recuperer les donnes sur attachements
+# fonction qui get text, return df
 # ===================================================================
-nomfile = r'Resultat\res_002_attachement.txt'
-with open(nomfile, "r",encoding='utf-8') as f:  # 打开文件
-    str_json_df_lesProjet = f.read()  # 读取文件
-json_df_lesProjet = json.loads(str_json_df_lesProjet)
-df_attachement = pd.read_json(json_df_lesProjet,encoding="utf-8", orient='records')
-
+def get_text_to_df(nomfile):
+    with open(nomfile, "r",encoding='utf-8') as f:  # 打开文件
+        str_json_df_lesProjet = f.read()  # 读取文件
+    json_df_lesProjet = json.loads(str_json_df_lesProjet)
+    return pd.read_json(json_df_lesProjet,encoding="utf-8", orient='records')
 # ===================================================================
-# recuperer les parent id (tache) dans 0032
+# recuperer projet dans 0032, attachements des Wrike,  Tahce de 0032
 # ===================================================================
-nomfile = r'Resultat\res_003_id_nom_Tahce.txt'
-with open(nomfile, "r",encoding='utf-8') as f:  # 打开文件
-    str_json_df_lesProjet = f.read()  # 读取文件
-json_df_lesProjet = json.loads(str_json_df_lesProjet)
-df_Tahce = pd.read_json(json_df_lesProjet,encoding="utf-8", orient='records')
-
-# ===================================================================
-# recuperer les id nom spv des projet dans 0032 
-# ===================================================================
-nomfile = r'Resultat\res_001_Projet0032.txt'
-with open(nomfile, "r",encoding='utf-8') as f:  # 打开文件
-    str_json_df_lesProjet = f.read()  # 读取文件
-json_df_lesProjet = json.loads(str_json_df_lesProjet)
-df_projet = pd.read_json(json_df_lesProjet,encoding="utf-8", orient='records')
+df_projet = get_text_to_df(r'Resultat\res_001_Projet0032.txt')
+df_attachement =  get_text_to_df( r'Resultat\res_002_attachement.txt')
+df_Tahce = get_text_to_df( r'Resultat\res_003_id_nom_Tahce.txt')
 
 # ===================================================================
 # pre-Filtrez les tache: si une tache contient des mot cle, elle est valide
 # ===================================================================
-# print(list(dic_nomTacheV_cleTacheV.values()))
 for key_tache,row_tache in df_Tahce.iterrows():
     for key_tacheV,cleTacheV in dic_nomTacheV_cleTacheV.items():
         if cleTacheV.upper() in row_tache["nom_parent"].upper():
             df_Tahce.loc[key_tache,"valide"] = 1
-            # df_id_parent.loc[key_tache,"tache_resume"] = key_tacheV
             break
 df_Tahce = df_Tahce.drop(df_Tahce[(df_Tahce['valide'] != 1)].index) 
-    # ===================================================================
-    # observer 
-    # ===================================================================
-# with open("OB_003_tache_1.csv","w",encoding="utf-8") as f:
-#     f.write(df_Tahce.to_csv(index=None,line_terminator="\n"))
+# observer 
+with open("OB_003_attachement_1.csv","w",encoding="utf-8") as f:
+    f.write(df_attachement.to_csv(index=None,line_terminator="\n"))
 
 # ===================================================================
-# pre-Filtrez les attachement: Si l'identifiant de leur père (tâche) est en 0032, gardez-le.
+# pre-Filtrez les attachement: Si l'identifiant de leur père (tâche) est en 0032, 
+# si oui , gardez-le; si non, le supprimer. 
 # ===================================================================
 for key_attachement,row_attachement in df_attachement.iterrows():
     index_parentID = df_Tahce[(df_Tahce.id_parent==row_attachement["id_parent"])].index.tolist()
     df_attachement.loc[key_attachement,"valide"] = len(index_parentID)
 df_attachement = df_attachement.drop(df_attachement[(df_attachement['valide'] != 1)].index) 
 df_attachement.reset_index(drop=True, inplace=True)
-
-    # ===================================================================
-    # observer 
-    # ===================================================================
+# observer 
 with open("OB_003_attachement_1.csv","w",encoding="utf-8") as f:
     f.write(df_attachement.to_csv(index=None,line_terminator="\n"))
 
 # ===================================================================
-# combine
+# les preparation avant la combination
 # ===================================================================
-p1 = re.compile(r'[[](.*?)[]]', re.S)
+p1 = re.compile(r'[[](.*?)[]]', re.S) # preparer un instance de 《re》 pour recuprer les text dans [] 
 
+    # ===================================================================
+    # get les nom des projet et son index dans df_projet
+    # ===================================================================
 list_projet = list(set(df_projet["nom projet"].to_list()))
 index_projet =  list(range(len(list_projet)))
 
+    # ===================================================================
+    # les dinctionnaires pour info base
+    # ===================================================================
 dic_KeyNom_ValueIndex = dict(zip(list_projet, index_projet))
 dic_KeyNom_ValueId = dict(zip(df_projet['nom projet'], df_projet['work_Id']))
 dic_KeyNom_ValueSPV = dict(zip(df_projet['nom projet'], df_projet['*SPV']))
@@ -81,16 +69,24 @@ dic_KeyNom_ValuePermalink = dict(zip(df_projet['nom projet'], df_projet['permali
 dic_KeyNom_ValueTypeAu = dict(zip(df_projet['nom projet'], df_projet['Type (AU)']))
 dic_KeyNom_ValueResponsable = dict(zip(df_projet['nom projet'], df_projet["Responsable Dev"]))
 
+    # ===================================================================
+    # les dinctionnaires pour info DatePMBAIL，DateBAIL，DateAccord，DateFinChantier，DateDebutChantier
+    # ===================================================================
 dic_KeyNom_ValueDatePMBAIL = dict(zip(df_projet['nom projet'], df_projet['📅 Signature PMBAIL']))
 dic_KeyNom_ValueDateBAIL = dict(zip(df_projet['nom projet'], df_projet['📆 Signature Bail']))
 dic_KeyNom_ValueDateAccord = dict(zip(df_projet['nom projet'], df_projet['Accord']))
 dic_KeyNom_ValueDateFinChantier = dict(zip(df_projet['nom projet'], df_projet['Date (Fin Chantier)']))
 dic_KeyNom_ValueDateDebutChantier = dict(zip(df_projet['nom projet'], df_projet['Date (Début Chantier)']))
 
+    # ===================================================================
+    # les dinctionnaires pour info DatePCM1，DatePCM3，DatePCM3
+    # ===================================================================
 dic_KeyNom_ValueDatePCM1 = dict(zip(df_projet['nom projet'], df_projet["Date accord (PCM1)"]))
 dic_KeyNom_ValueDatePCM2 = dict(zip(df_projet['nom projet'], df_projet["Date accord (PCM2)"]))
 dic_KeyNom_ValueDatePCM3 = dict(zip(df_projet['nom projet'], df_projet["Date accord (PCM3)"]))
-
+    # ===================================================================
+    # les dinctionnaires pour info DateTransPC，DateTransDP
+    # ===================================================================
 dic_KeyNom_ValueDateTransPC = dict(zip(df_projet['nom projet'], df_projet["Date accord (Transf PC)"]))
 dic_KeyNom_ValueDateTransDP = dict(zip(df_projet['nom projet'], df_projet["📅  Date accord (Transf DP)"]))
 
@@ -98,13 +94,16 @@ dic_KeyNom_ValueDateValidite = dict(zip(df_projet['nom projet'], df_projet["Vali
 dic_KeyNom_ValueReceptionDAACT = dict(zip(df_projet['nom projet'], df_projet["Réception DAACT"]))
 
 
-
-    # ===================================================================
-    # Initialiser une table vide
-    # ===================================================================
-df_res = DataFrame()
-df_exception = DataFrame()
+# ===================================================================
+# Initialiser deux table vide
+# ===================================================================
+df_res = DataFrame() # 
+df_exception = DataFrame() # 
 index_df_exception = 0
+
+# ===================================================================
+# Pour tous les projet 
+# ===================================================================
 for i in index_projet:
     df_res.loc[i,"nom projet"] = list_projet[i]
     df_res.loc[i,"work_Id"] = dic_KeyNom_ValueId[list_projet[i]]
@@ -130,13 +129,13 @@ for i in index_projet:
     df_res.loc[i,"Reception DAACT"] = dic_KeyNom_ValueReceptionDAACT[list_projet[i]]
 
 
-for key,value in dic_nomTacheV_cleTacheV.items():
-    df_res["NB_"+key] = 0
-    df_res["conf_"+key] = 0
-    df_res["perM_"+key] = nan
-    df_res["url_"+key] = nan
-    df_res["Nom_"+key] = nan
-    df_res["createdDate_"+key] = nan
+for key,value in dic_nomTacheV_cleTacheV.items(): # parcourir
+    df_res["NB_"+key] = 0 # comiben de attchement dans ce tache
+    df_res["conf_"+key] = 0 #
+    df_res["perM_"+key] = nan #
+    df_res["url_"+key] = nan #
+    df_res["Nom_"+key] = nan #
+    df_res["createdDate_"+key] = nan #
 
     # for key,value in dic_nomTacheV_cleTacheV.items():
     #     df_res.loc[i,"NB_"+key] = 0
@@ -236,7 +235,6 @@ for key_attachement,row_attachement in df_attachement.iterrows():
 # ===================================================================
 # sauvegrader
 # ===================================================================
-
 with open(r"Resultat\res_004_Projet_attchement.txt","w",encoding="utf-8") as f:
     f.write(json.dumps( df_res.to_json(),ensure_ascii=False))
 
