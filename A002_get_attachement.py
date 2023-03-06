@@ -53,7 +53,7 @@ for temps in list_temps:
                 headers = {'Authorization':  'bearer ' + myToken },
                                  params = {'createdDate': temps,
                                             "withUrls": "true"})
-    with open(r"Observation\all_attchements" +temps[9:16]+".txt","w",encoding="utf-8") as f:
+    with open(r"Observation\B002_all_attchements" +temps[9:16]+".txt","w",encoding="utf-8") as f:
         f.write(reponse.text)
     for courrent_attachement in reponse.json()['data']:     # parcourir dans une reponse de API
         if courrent_attachement['authorId'] != id_robot: # ici , les fichiers du robot sont ignores

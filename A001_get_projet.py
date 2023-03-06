@@ -21,7 +21,7 @@ def main():
         'CAPEX - V3 (K€)', 'Marge (V3)','Date dépôt AO', 'Période (Dépôt CRE)',
         'Type (Tarif)-V2','Date (Limite MES)','Date (Signature Procuration)',
         '📆 Date réception CR(D)','Montant HT CR(D)','Puissance (MWc Déf)',
-        'Date (envoi dossier notaire)','Date (Début Chantier)','Date (Fin Chantier)',
+        'Date (envoi dossier notaire)','Date (Debut Chantier)','Date (Fin Chantier)',
         'Date (Debut Structure)','Date (Fin Structure)','Date (Debut Elec)',
         'Date (Fin Elec)','Date (Debut Fondations)','Date (Fin Fondations)',
         'Code Postal (Projet)','Commune (Projet)','Longitude DD (Projet)',
@@ -30,7 +30,7 @@ def main():
         'Productible kWh/kWc (V4 Solargis)','Adresse (Projet)','Type (AU)','📆 Signature Bail',
         "Date accord (PCM1)","Date accord (PCM2)","Date accord (PCM3)","Date accord (Transf PC)",
         "📅  Date accord (Transf DP)","Validité","Réception DAACT","Date paiement acompte (PTF)",
-        "Date réception (CARDI)","date signature CA","Date (Consuel)"
+        "Date réception (CARDI)","date signature CA","Date (Consuel)","Date Réception PTF"
         ]
     
     '''
@@ -138,7 +138,7 @@ def main():
     reponse = requests.get(url + '/folders/'   + id_dossier_0032 +"/folders" + "?project=true&fields=[customFields]", 
                 headers = {'Authorization':  'bearer ' + myToken })
 
-    with open("OB_000_reponse_les_projet"+".txt","w",encoding="utf-8") as f:
+    with open(r"Observation\OB_001_reponse_les_projet"+".txt","w",encoding="utf-8") as f:
         f.write(reponse.text)
 
     df_table = DataFrame()
