@@ -8,10 +8,17 @@ import re
 import time
 import shutil
 import os
-from P000_dic_tache_attahement_chemin import *
+from A000_dic_tache_attahement_chemin import *
 from datetime import datetime
 import datetime as dt
 
+# ===================================================================
+# try_contien_boolen vérifie la logique : 
+# Est ce que <parent (str)> contien <fil (str)>. 
+#  Si oui, retourne <True>
+#  Si non, retourne <False>
+#  Si un des parametres d'entrée n'est pas str, retourne <False>
+# ===================================================================
 def try_contien_boolen(parent,fil):
     try:
         if fil in parent:
@@ -19,6 +26,13 @@ def try_contien_boolen(parent,fil):
     except:
         flage_validation =False    
 
+# ==================================================================
+# Control:
+# (1)   Vérifiez si seules les lignes qui répondent à une certaine condition
+# (2)   date - > pdf
+# (3)   pdf - > date
+# (4)   date - >  dates Precedentes
+# ===================================================================
 def control_date_pdf_datePrecedent(date_control,
                                    list_champ_ayantValeur,
                                    list_date_ayantValeur,
@@ -26,7 +40,9 @@ def control_date_pdf_datePrecedent(date_control,
                                    condition_operation = "=",
                                    conditon_valeur = ""):
     for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
-        # Vérifiez si seules les lignes qui répondent à une certaine condition sont traitées.
+        # ===================================================================
+        #  Vérifiez si seules les lignes qui répondent à une certaine condition 
+        # ===================================================================
         condition_Flag = True
         if condition_Champ !="":
             if condition_operation == "==":
@@ -35,25 +51,73 @@ def control_date_pdf_datePrecedent(date_control,
             if condition_operation == "Contient":
                 if not try_contien_boolen(row_projet[condition_Champ],conditon_valeur):
                     condition_Flag = False
-        # si une lignes répond à une certaine condition
-        if condition_Flag:
-            # date - > pdf       
-            if not pd.isna(row_projet[date_control]):
-                for i in list_champ_ayantValeur:
+
+        # ==================================================================
+        # date - > pdf :  
+        # Si une lignes répond à une certaine condition
+        # et si date_control n'est pas vide
+        # Nous vérifierons si tous les pdf sont présents.
+        # ===================================================================
+        if condition_Flag and (not pd.isna(row_projet[date_control])):
+            for i in list_champ_ayantValeur:
+                flag_est_list = False
+                if type(i) == type([]):
+                    flag_est_list = True
+                if flag_est_list:
+                    if row_projet["NB_"+i[0]] == 0 and row_projet["NB_"+i[1]] == 0:
+                        df_projet_lien.loc[key_projet,"tache_" +i[0]] = "0 ❌"
+                        df_projet_lien.loc[key_projet,"tache_" +i[1]] = "0 ❌"
+                    if row_projet["conf_"+i[0]] == 0 and row_projet["conf_"+i[1]] == 0:
+                        df_projet_lien.loc[key_projet,"fichier_" +i[0]] = "0 ❌"
+                        df_projet_lien.loc[key_projet,"fichier_" +i[1]] = "0 ❌"      
+                else:
                     if row_projet["NB_"+i] == 0:
                         df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
                     if row_projet["conf_"+i] == 0:
                         df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-            # pdf - > date
+
+        # ==================================================================
+        # pdf - > date : 
+        # Si une lignes répond à une certaine condition
+        # si tous les pdf sont presents, 
+        # Nous vérifierons si la date_control esy présent.
+        # ===================================================================
+        if condition_Flag:
+            # Verifer si tous les pdfs sont presents, avec flag_tous_pdf_prensent
+            flag_tous_pdf_prensent = True # 
             for i in list_champ_ayantValeur:
-                if row_projet["NB_"+i] > 0:
-                    df_projet_lien.loc[key_projet,"Date reception CR(D)"] = "❌ fichiers"
-            # date - > date  prededent         
-            if not pd.isna(row_projet[date_control]):
+
+                flag_est_list = False
+                if type(i) == type([]):
+                    flag_est_list = True
+
+                if flag_est_list:
+                    if row_projet["NB_"+i[0]] == 0 and row_projet["NB_"+i[1]] == 0:
+                        flag_tous_pdf_prensent = False
+                else:
+                    if row_projet["NB_"+i] == 0:
+                        flag_tous_pdf_prensent = False
+            # si tous les pdfs sont presents, et date_control est abesnt, on le marque "❌ fichiers"
+            if flag_tous_pdf_prensent:
+                if pd.isna(df_projet_lien.loc[key_projet,date_control]):
+                    df_projet_lien.loc[key_projet,date_control] = "❌ fichiers"
+
+        # ==================================================================
+        # date - > date precedent: 
+        # Si la date_control est présent.
+        # Nous vérifierons si les date precedents sont présentes.
+        # ===================================================================
+        if condition_Flag:
+            if not pd.isna(df_projet_lien.loc[key_projet,date_control]):
                 for j in list_date_ayantValeur:
-                    if pd.isna(row_projet[j]):
+                    if pd.isna(df_projet_lien.loc[key_projet,j]):
                         df_projet_lien.loc[key_projet,j] = "❌ " + date_control
 
+# ===================================================================
+# control_unCouple_conflit_Pdf vérifie la logique : 
+# dans une paire de fichiers, les occurrences sont mutuellement exclusives. 
+# Si deux fichiers apparaissent en même temps, on dit qu'une erreur s'est produite.
+# ===================================================================
 def control_unCouple_conflit_Pdf(list_couple_pdf):
     for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
         for couple_confit in list_couple_pdf:
@@ -83,267 +147,248 @@ for tache_resume in dic_nomTacheV_cleAttchementV.keys():
         df_projet_lien[i+tache_resume] = nan
 
 
-# ===================================================================
+# 16 ==================================================================
 # CONSUELV1 -> not CONSUELV2,  CONSUELV2 -> not CONSUELV1
 # "DOEV1" -> not "DOEV2" ,"DOEV2" -> not "DOEV1"
 # "PVRV1 -> not PVRV2, PVRV2 -> not PVRV1
 # ===================================================================
-list_couple_pdf =[["CONSUELV1" ,"CONSUELV2"],
-              ["DOEV1","DOEV2"],
-              ["PVRV1","PVRV2"]]
+list_couple_pdf =[  ["CONSUELV1" ,"CONSUELV2"],
+                    ["DOEV1","DOEV2"],
+                    ["PVRV1","PVRV2"]]
 control_unCouple_conflit_Pdf(list_couple_pdf)
 
-# ===================================================================
-# 'Date GO CONSTRUCTION' <- pdf:"DOEV2" ou "DOEV1"  
-# -> date prededent: Date reception (CARDI), Date Demande Racco,Date T0,
-#                   Date depot AO, date_Accord, date_PMBAIL
-# =================================================================== 
-date_control = "Date GO CONSTRUCTION"
-list_champ_ayantValeur = ["DOEV2","DOEV1"]
-list_date_ayantValeur =["Date reception (CARDI)",
-                        "Date Demande Racco","Date T0","Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
 
-# ===================================================================
-# 'Date Consuel' <-> pdf:"CONSUELV1" ou "CONSUELV2"  -> date prededent: 
-#  Date reception (CARDI), 
-# Date Demande Racco,Date T0,Date depot AO, date_Accord, date_PMBAIL
-# =================================================================== 
-date_control = "Date Consuel"
-list_champ_ayantValeur = ["CONSUELV1","CONSUELV2"]
-list_date_ayantValeur =["Date reception (CARDI)",
-                        "Date Demande Racco","Date T0","Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
-
-# ===================================================================
-# 'Date signature CA' <-> pdf:"CONTRATHA"  -> date prededent: 
-# "Date MES,Date reception (CARDI)
-# "Date Demande Racco,Date T0,Date depot AO, date_Accord, date_PMBAIL"
+# 15 ===================================================================
+# Date signature CA <-> pdf:["CONTRATHA"]  
+# -> date précédent: ["Date MES","Date Consuel", "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+#  "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord","Date GO URBA","date_PMBAIL"]
 # =================================================================== 
 date_control = "Date signature CA"
 list_champ_ayantValeur = ["CONTRATHA"]
-list_date_ayantValeur =["Date MES","Date reception (CARDI)",
-                        "Date Demande Racco","Date T0","Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
+list_date_prededente = ["Date MES","Date Consuel", "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+     "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord","Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
 
-# ===================================================================
-# 'Date MES' <-> pdf:"MES"  -> date prededent: 
-# "Date reception (CARDI), Date Demande Racco,Date T0,Date depot AO date_Accord, date_PMBAIL"
-# 'Date MES' -> pdf  "CONSUELV1" ou "CONSUELV2","DOEV1"ou "DOEV2","PVRV1" ou "PVRV2"
+# 14 ==================================================================
+# 'Date MES' <-> pdf: ["MES", 
+#                              un de ["CONSUELV1","CONSUELV2"],
+#                              un de ["DOEV1","DOEV2"],
+#                               un de ["PVRV1","PVRV2"]]
+# -> date précédent: ["Date Consuel",  "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+#     "date_BAIL","Date T0","Date Demande Racco","date_Accord"  ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 # =================================================================== 
 date_control = "Date MES"
-list_champ_ayantValeur = ["MES","CONSUELV1","CONSUELV2","DOEV1","DOEV2","PVRV1","PVRV2"]
-list_date_ayantValeur =["Date reception (CARDI)","Date Demande Racco","Date T0",
-                        "Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
+list_champ_ayantValeur = ["MES",
+                          ["CONSUELV1","CONSUELV2"],
+                          ["DOEV1","DOEV2"],
+                          ["PVRV1","PVRV2"]]
+list_date_prededente = ["Date Consuel",  "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+     "date_BAIL","Date T0","Date Demande Racco","date_Accord"  ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
 
-# ===================================================================
-# 'Date reception (CARDI)' <-> pdf:"CARDI"  -> date prededent: 
-# "Date Demande Racco,Date T0,Date depot AO date_Accord, date_PMBAIL"
-# ===================================================================   
-date_control = "Date reception (CARDI)"
-list_champ_ayantValeur = ["CARDI"]
-list_date_ayantValeur =["Date Demande Racco", "Date T0",
-                        "Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
+# 13 ===================================================================
+# 'Date Consuel' <-> pdf: un de ["CONSUELV1","CONSUELV2"]  
+# -> date précédent: [  "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+#  "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+# =================================================================== 
+date_control = "Date Consuel"
+list_champ_ayantValeur = [["CONSUELV1","CONSUELV2"]]
+list_date_prededente = [  "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+     "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
 
+# 12 ===================================================================
+# date de fin chantier <-> pdf (Pour PC : ["DOC","DAACT","CONSTATPC","CNRPC","PRODPC","ARRETEPC"]
+#                               Pour DP : ["DAACT","CONSTATDP","CNRDP","PRODDP","ARRETEDP"]
+#                               Pour PD+DP: ["DOC","DAACT","CONSTATPC","CNRPC","CONSTATDP","CNRDP",
+#                                                  "PRODPC","ARRETEPC","PRODDP","ARRETEDP"] )
+# - > date précédent: ["date_debut_Chantier", "Date GO CONSTRUCTION",
+#  "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 # ===================================================================
-# 'Date paiement acompte PTF' <-> pdf:"ACOMPTEPTF"  -> date prededent: 
-# "Date Reception PTF,Date Demande Racco,Date T0,Date depot AO date_Accord, date_PMBAIL"
+date_control = "date_fin_Chantier"
+list_date_prededente = ["date_debut_Chantier", "Date GO CONSTRUCTION", "date_BAIL",
+                         "Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+
+# Pour PC
+champ = "Type (AU)"
+oper = "="
+valeur = "PC"
+list_champ_ayantValeur = ["DOC","DAACT","CONSTATPC","CNRPC","PRODPC","ARRETEPC"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
+                               condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
+
+
+# Pour DP
+champ = "Type (AU)"
+oper = "="
+valeur = "DP"
+list_champ_ayantValeur = ["DAACT","CONSTATDP","CNRDP","PRODDP","ARRETEDP"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
+                               condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
+
+# Pour PC+ DP
+champ = "Type (AU)"
+oper = "="
+valeur = "PC+DP"
+list_champ_ayantValeur = ["DOC","DAACT",
+                          "CONSTATPC","CNRPC","CONSTATDP","CNRDP",
+                            "PRODPC","ARRETEPC","PRODDP","ARRETEDP"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
+                               condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
+
+
+# 11 ===================================================================
+# date debut chantier <-> pdf: ["DOC"]
+# ->date precedents [ "Date GO CONSTRUCTION",
+#     "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+# ===================================================================
+date_control = "date_debut_Chantier"
+list_champ_ayantValeur = ["DOC"]
+list_date_prededente = [ "Date GO CONSTRUCTION","date_BAIL","Date T0",
+                         "Date Demande Racco","date_Accord" ,"Date depot Accord" ,
+                         "Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
+
+# 10 ===================================================================
+# 'Date GO CONSTRUCTION' <-> pdf: []
+# -> date précédent: [ "date_BAIL","Date T0",
+#                       "Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+# =================================================================== 
+date_control = "Date GO CONSTRUCTION"
+list_champ_ayantValeur = []
+list_date_prededente =[ "date_BAIL","Date T0", "Date Demande Racco","date_Accord" ,
+                        "Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
+
+
+# 9 ===================================================================
+# "date Bail" <-> pdf (["SBN"]) 
+# -> date précédent: ["Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,
+#                       "Date GO URBA","date_PMBAIL"]
+# ===================================================================
+date_control = "date_BAIL"
+list_champ_ayantValeur = ["SBN"]
+list_date_prededente = ["Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,
+                         "Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
+
+# 8.2 PTF ===================================================================
+# 'Date paiement acompte PTF' <-> pdf:"ACOMPTEPTF"  
+# -> date précédent: ["Date Reception PTF","Date Demande Racco","Date T0","date_Accord",
+#                        "Date depot Accord" ,"Date GO URBA""date_PMBAIL"]
 # ===================================================================
 date_control = "Date paiement acompte PTF"
 list_champ_ayantValeur = ["ACOMPTEPTF"]
-list_date_ayantValeur =["Date Reception PTF","Date Demande Racco","Date T0",
-                        "Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
+list_date_prededente =["Date Reception PTF","Date Demande Racco","Date T0","date_Accord",
+                        "Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
 
-# ===================================================================
-# 'Date Reception PTF' <-> pdf:"PTF"  -> date prededent: "
-# ,Date Demande Racco,Date T0,Date depot AO date_Accord, date_PMBAIL"
+# 7.2 PTF ===================================================================
+# 'Date Reception PTF' <-> pdf:"PTF"  
+# -> date précédent: ["Date Demande Racco","Date T0","date_Accord","Date depot Accord" ,
+#                        "Date GO URBA","date_PMBAIL"]
 # ===================================================================
 date_control = 'Date Reception PTF'
 list_champ_ayantValeur = ["PTF"]
-list_date_ayantValeur =["Date Demande Racco","Date T0",
-                        "Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
+list_date_prededente =["Date Demande Racco","Date T0","date_Accord","Date depot Accord" ,
+                        "Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
 
-# ===================================================================
-# 'Date paiement acompte CR(D)' <-> pdf:"ACOMPTECRD"  -> date prededent: 
-# "Date reception CR(D),Date Demande Racco,Date T0, Date depot AO date_Accord, date_PMBAIL"
+# 8.1 -(CRD)===================================================================
+# 'Date paiement acompte CR(D)' <-> pdf:"ACOMPTECRD"  
+# -> date précédent: ["Date reception CR(D)","Date Demande Racco","Date T0","date_Accord",
+#                        "Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 # ===================================================================
 date_control = 'Date paiement acompte CR(D)'
 list_champ_ayantValeur = ["ACOMPTECRD"]
-list_date_ayantValeur =["Date reception CR(D)","Date Demande Racco","Date T0",
-                        "Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
+list_date_prededente = ["Date reception CR(D)","Date Demande Racco","Date T0","date_Accord",
+                        "Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
 
-# ===================================================================
-# 'Date reception CR(D)' <-> pdf:"CRD"  -> date prededent: ",
-# Date Demande Racco,Date T0, Date depot AO date_Accord, date_PMBAIL"
+# 7.1 -CR(D) ===================================================================
+# 'Date reception CR(D)' <-> pdf:"CRD"  -> date précédent: ",
+# -> date précédent: ["Date Demande Racco","Date T0","date_Accord","Date depot Accord" ,
+#                        "Date GO URBA","date_PMBAIL"]
 # ===================================================================
 date_control = 'Date reception CR(D)'
 list_champ_ayantValeur = ["CRD"]
-list_date_ayantValeur =["Date Demande Racco","Date T0",
-                        "Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
-
-# ===================================================================
-# 'Date Demande Racco' <-> pdf:"DDRCRE" 
-#  -> date prededent: "Date T0,Date depot AO date_Accord, date_PMBAIL"
-# ===================================================================
-date_control = "Date Demande Racco"
-list_champ_ayantValeur = ["DDRCRE"]
-list_date_ayantValeur =["Date T0",
-                        "Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
+list_date_prededente =["Date Demande Racco","Date T0","date_Accord","Date depot Accord" ,
+                        "Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
 
 
+# 6.2， ===========================================================
+# En cas de "Type Tarif" contient "CRE"
+# 'Date T0' <-> pdf:LAUREAT  
+# -> date précédent: ["date_Accord","Date depot Accord" , "Date GO URBA","date_PMBAIL"]
 # ===================================================================
 # 'Type (Tarif)-V2' => {"Obligation d'achat S17", nan, 'Autoconsommation', 'AO CRE', "Obligation d'achat S21", None}
-# si 'Type (Tarif)-V2' contien "Obligation d'achat"
-# 'Date T0' <-> pdf:"DDROA"  -> 
-# date prededent: Date depot AO date_Accord","date_PMBAIL"
-# ===================================================================
-date_control = "Date T0"
-list_champ_ayantValeur = ["DDROA"]
-list_date_ayantValeur =["Date depot AO","date_Accord","date_PMBAIL"]
-
 champ= "Type Tarif"
 oper = "Contient"
-valeur = "Obligation d'achat" 
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur,
-                               condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
-
-# ===================================================================
-# 'Type (Tarif)-V2' => {"Obligation d'achat S17", nan, 'Autoconsommation', 'AO CRE', "Obligation d'achat S21", None}
-# si 'Type (Tarif)-V2' contien "AO"
-#   'Date T0' <-> pdf:LAUREAT  -> date prededent: Date depot AO date_Accord","date_PMBAIL"
-#   'Date depot AO' <-> pdf: DOSSIERAO  -> date prededent: date_Accord","date_PMBAIL"
-# ===================================================================
-champ= "Type Tarif"
-oper = "Contient"
-valeur = "AO" 
+valeur = "CRE" 
 
 date_control = "Date T0"
 list_champ_ayantValeur = ["LAUREAT"]
-list_date_ayantValeur =["Date depot AO","date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur,
+list_date_prededente = ["date_Accord","Date depot Accord" , "Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
                                condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
 
 
-date_control = "Date depot AO"
-list_champ_ayantValeur = ["DOSSIERAO"]
-list_date_ayantValeur =["date_Accord","date_PMBAIL"]
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur,
+# 6.1 =================================================================
+#  En cas de "Type Tarif" contient "Obligation d'achat"
+# 'Date T0' <-> pdf:["DDROA"]  
+# -> date précédent: ["date_Accord","Date depot Accord" , "Date GO URBA","date_PMBAIL"]
+# ===================================================================
+# 'Type (Tarif)-V2' => {"Obligation d'achat S17", nan, 'Autoconsommation', 'AO CRE', "Obligation d'achat S21", None}
+champ= "Type Tarif"
+oper = "Contient"
+valeur = "Obligation d'achat" 
+
+date_control = "Date T0"
+list_champ_ayantValeur = ["DDROA"]
+list_date_prededente = ["date_Accord","Date depot Accord" , "Date GO URBA","date_PMBAIL"]
+
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
                                condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
 
+# 5.2 ===================================================================
+# En cas de "Type Tarif" contient "CRE"
+# 'Date Demande Racco' <-> pdf:"DDRCRE" 
+#  -> date précédent: ["date_Accord","Date depot Accord" , "Date GO URBA","date_PMBAIL"]
 # ===================================================================
-# date de fin chantier <-> pdf 
-# - > date prededent "date_debut_Chantier","date_Accord","date_PMBAIL"
-# ===================================================================
-for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
-    list_champ_ayantValeur = []
-    list_date_ayantValeur =["date_debut_Chantier","date_Accord","date_PMBAIL"]
-    # de date - > champs
-    if not pd.isna(row_projet["date_fin_Chantier"]):
-        list_champ_ayantValeur +=["PMBAIL"]
-        if "PC" == row_projet["Type (AU)"]:
-            list_champ_ayantValeur += ["DOC","DAACT"]
-            list_champ_ayantValeur += ["CONSTATPC","CNRPC"]
-            list_champ_ayantValeur += ["PRODPC","ARRETEPC"]
-        elif "DP" == row_projet["Type (AU)"] :
-            list_champ_ayantValeur += ["DAACT"]
-            list_champ_ayantValeur += ["CONSTATDP","CNRDP"]
-            list_champ_ayantValeur += ["PRODDP","ARRETEDP"]
-        elif "PC+DP" == row_projet["Type (AU)"]:
-            list_champ_ayantValeur += ["DOC","DAACT"]
-            list_champ_ayantValeur += ["CONSTATPC","CNRPC"] +  ["CONSTATDP","CNRDP"]
-            list_champ_ayantValeur += ["PRODPC","ARRETEPC"] + ["PRODDP","ARRETEDP"]
+# 'Type (Tarif)-V2' => {"Obligation d'achat S17", nan, 'Autoconsommation', 'AO CRE', "Obligation d'achat S21", None}
+champ= "Type Tarif"
+oper = "Contient"
+valeur = "CRE" 
 
-        for i in list_champ_ayantValeur:
-            if row_projet["NB_"+i] == 0:
-                df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
-            if row_projet["conf_"+i] == 0:
-                df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # date - > date precedents
-        for j in list_date_ayantValeur:
-            if pd.isna(row_projet[j]):
-                df_projet_lien.loc[key_projet,j] = "❌ fin_Chantier"
+date_control = "Date Demande Racco"
+list_champ_ayantValeur = ["DDRCRE"]
+list_date_prededente =["date_Accord","Date depot Accord" , "Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
+                               condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
 
-    # pdf -> date
-    if "PC" == row_projet["Type (AU)"] or "PC+DP" == row_projet["Type (AU)"]:
-        if row_projet["NB_"+"DAACT"] > 0 and  row_projet["NB_"+"DOC"] > 0:
-            if pd.isna(row_projet["date_fin_Chantier"]):
-                df_projet_lien.loc[key_projet,"date_fin_Chantier"] = "❌ fichiers"
-    if "DP" == row_projet["Type (AU)"] :
-        if row_projet["NB_"+"DAACT"] >0:
-            if pd.isna(row_projet["date_fin_Chantier"]):
-                df_projet_lien.loc[key_projet,"date_fin_Chantier"] = "❌ fichiers"
 
+# 5.1 ===============================================================
+# En cas de "Type Tarif" contient "Obligation d'achat"
+# 'Date Demande Racco' <-> pdf:[]
+#  -> date précédent :  ["date_Accord","Date depot Accord" , "Date GO URBA","date_PMBAIL"]
 # ===================================================================
-# date debut chantier -> pdf "DOC"
-# ->date precedents "date_Accord","date_PMBAIL"
-# ===================================================================
-list_champ_ayantValeur = ["DOC"]
-list_date_ayantValeur =["date_Accord","date_PMBAIL"]
-for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
-    if not pd.isna(row_projet["date_debut_Chantier"]):
-    # date - > pdf
-        for i in list_champ_ayantValeur:
-            if row_projet["NB_"+i] == 0:
-                df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
-            if row_projet["conf_"+i] == 0:
-                df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # date - > date
-        for j in list_date_ayantValeur:
-            if pd.isna(row_projet[j]):
-                df_projet_lien.loc[key_projet,j] = "❌ debut_Chantier"   
+# 'Type (Tarif)-V2' => {"Obligation d'achat S17", nan, 'Autoconsommation', 'AO CRE', "Obligation d'achat S21", None}
+champ= "Type Tarif"
+oper = "Contient"
+valeur = "Obligation d'achat" 
 
-# ===================================================================
-#Accord (avant date Accord) <-> pdf 
-# - > date precedents "date_PMBAIL"
-# ===================================================================
-for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
-    list_champ_ayantValeur = []
-    list_date_ayantValeur =["date_PMBAIL"]
-    # de date - > pdf
-    if not pd.isna(row_projet["date_Accord"]):
-        list_champ_ayantValeur +=["PMBAIL"]
-        if "PC" == row_projet["Type (AU)"]:
-            list_champ_ayantValeur += ["PRODPC","ARRETEPC"]
-        elif "DP" == row_projet["Type (AU)"] :
-            list_champ_ayantValeur += ["PRODDP","ARRETEDP"]
-        elif "PC+DP" == row_projet["Type (AU)"]:
-            list_champ_ayantValeur += ["PRODPC","ARRETEPC"] + ["PRODDP","ARRETEDP"]
-        for i in list_champ_ayantValeur:
-            if row_projet["NB_"+i] == 0:
-                df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
-            if row_projet["conf_"+i] == 0:
-                df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # date - > date precedents 
-        for j in list_date_ayantValeur:
-            if pd.isna(row_projet[j]):
-                df_projet_lien.loc[key_projet,j] = "❌ Accord"   
-        
-    # pdf -> date precedents 
-    if "PC" == row_projet["Type (AU)"]:
-        if row_projet["NB_"+"PRODPC"] > 0 and  row_projet["NB_"+"ARRETEPC"] > 0:
-            if pd.isna(row_projet["date_Accord"]):
-                df_projet_lien.loc[key_projet,"date_Accord"] = "❌ selon fichiers"    
+date_control = "Date Demande Racco"
+list_champ_ayantValeur = []
+list_date_prededente = ["date_Accord","Date depot Accord" , "Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
+                               condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
 
-    if "DP" == row_projet["Type (AU)"] :
-        if row_projet["NB_"+"PRODDP"] > 0 and row_projet["NB_"+"ARRETEDP"] > 0:
-            if pd.isna(row_projet["date_Accord"]):
-                df_projet_lien.loc[key_projet,"date_Accord"] = "❌ selon fichiers"
-    
-    if "PC+DP" == row_projet["Type (AU)"]:
-        if row_projet["NB_"+"PRODPC"] > 0 and  row_projet["NB_"+"ARRETEPC"] > 0:
-            if row_projet["NB_"+"PRODDP"] > 0 and row_projet["NB_"+"ARRETEDP"] > 0:
-                if pd.isna(row_projet["date_Accord"]):
-                    df_projet_lien.loc[key_projet,"date_Accord"] = "❌ selon fichiers"
-
-# ===================================================================
-#  Accord (6 mois apres date Accord)  -> pdf "date_Accord"
+# 4 ===================================================================
+#  6 mois + date Accord  -> pdf (si PC :["CONSTATPC","CNRPC"]
+#                                  si DP : ["CONSTATDP","CNRDP"]
+#                                   si PC + DP : ["CONSTATPC","CNRPC","CONSTATDP","CNRDP"])
+# -> date precedents : []
 # ===================================================================
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
     list_champ_ayantValeur = []
@@ -369,23 +414,62 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
             if row_projet["conf_"+i] == 0:
                 df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
 
+# 3 =================================================================
+# date_Accord <-> pdf (selon si PC : ["PRODPC","ARRETEPC"]
+#                           si DP : ["PRODDP","ARRETEDP"]
+#                           si PC +DP : ["PRODPC","ARRETEPC","PRODDP","ARRETEDP"])
+# - > date precedents : ["Date depot Accord" , "Date GO URBA","date_PMBAIL"]
 # ===================================================================
-# date PMbail <-> pdf
+date_control = "date_Accord"
+list_date_prededente =["Date depot Accord" , "Date GO URBA","date_PMBAIL"]
+
+# Pour PC
+champ = "Type (AU)"
+oper = "="
+valeur = "PC"
+list_champ_ayantValeur = ["PRODPC","ARRETEPC"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
+                               condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
+
+# Pour DP
+champ = "Type (AU)"
+oper = "="
+valeur = "DP"
+list_champ_ayantValeur =["PRODDP","ARRETEDP"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
+                               condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
+
+# Pour PC+DP
+champ = "Type (AU)"
+oper = "="
+valeur = "PC+DP"
+list_champ_ayantValeur = ["PRODPC","ARRETEPC","PRODDP","ARRETEDP"] 
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente,
+                               condition_Champ=champ,condition_operation=oper,conditon_valeur=valeur)
+
+# 2 =========================================================
+# "Date depot Accord <-> pdf : []
+# ->  date précédente : ["Date GO URBA","date_PMBAIL"]
+# ===================================================================
+date_control = "Date depot Accord"
+list_champ_ayantValeur = []
+list_date_prededente = ["Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
+ 
+
+# 1 ===================================================================
+# date PMbail <-> pdf : ["PMBAIL"] 
+# -> date précédente : []
 # ===================================================================
 date_control = "date_PMBAIL"
 list_champ_ayantValeur = ["PMBAIL"]
-list_date_ayantValeur = []
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
+list_date_prededente = []
+control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_prededente)
+
 
 # ===================================================================
-# date Bail <-> pdf , si Bail n'est pas vide, l'eurrer dans date PMBAIL est supprimée
-# ===================================================================
-date_control = "date_BAIL"
-list_champ_ayantValeur = ["SBN"]
-list_date_ayantValeur = []
-control_date_pdf_datePrecedent(date_control,list_champ_ayantValeur,list_date_ayantValeur)
-
 # si Bail n'est pas vide, l'eurrer dans date PMBAIL est supprimée (L'erreur est pardonnée)
+# ===================================================================
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
     if not pd.isna(row_projet["date_BAIL"]):
         if not "❌" in row_projet["date_BAIL"]:
@@ -462,9 +546,7 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
                     df_projet_lien.loc[key_projet,"tache_" +i] = "0 ❌"
                 if row_projet["conf_"+i] == 0:
                     df_projet_lien.loc[key_projet,"fichier_" +i] = "0 ❌"
-    # ===================================================================
     #  FLAG 1_2_dp
-    # ===================================================================
     df_projet_lien.loc[key_projet,"flag_1_2_dp"] = str(flag_1DP)
 
 
@@ -585,19 +667,21 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
                 df_projet_lien.loc[key_projet,key_date] = str_temp[8:10] + str_temp[4:8] +str_temp[:4]
 
 
+with open(r"Resultat\res_005_controle_date_pdf.txt","w",encoding="utf-8") as f:
+    f.write(json.dumps( df_projet_lien.to_json(),ensure_ascii=False))
 
-with open(r"C:\Users\tpeng\ENOE ENERGIE\SI - Tao PENG\Projet_detectPDF0032\res_003_Projet_date_attchement.csv","w",encoding="utf-8") as f:
+with open(r"Resultat\res_005_controle_date_pdf.csv","w",encoding="utf-8") as f:
     f.write(df_projet_lien.to_csv(index=None,line_terminator="\n"))
-    f.write
 
-df_tete_tableau = DataFrame()
-index = 0
 
-for i in ["tache_PMBAIL","fichier_PMBAIL","date_PMBAIL"]:
-    df_tete_tableau.loc[index,"nom_tete"] = "PMBAIL"
-    df_tete_tableau.loc[index,"nom_champs"] = i
-    index +=1
+# df_tete_tableau = DataFrame()
+# index = 0
 
-with open(r"C:\Users\tpeng\ENOE ENERGIE\SI - Tao PENG\Projet_detectPDF0032\double_tete_PMBAIL.csv","w",encoding="utf-8") as f:
-    f.write(df_tete_tableau.to_csv(index=None,line_terminator="\n"))
-    f.write
+# for i in ["tache_PMBAIL","fichier_PMBAIL","date_PMBAIL"]:
+#     df_tete_tableau.loc[index,"nom_tete"] = "PMBAIL"
+#     df_tete_tableau.loc[index,"nom_champs"] = i
+#     index +=1
+
+# with open(r"C:\Users\tpeng\ENOE ENERGIE\SI - Tao PENG\Projet_detectPDF0032\double_tete_PMBAIL.csv","w",encoding="utf-8") as f:
+#     f.write(df_tete_tableau.to_csv(index=None,line_terminator="\n"))
+#     f.write
