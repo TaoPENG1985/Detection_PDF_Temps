@@ -4,6 +4,8 @@ import pandas  as pd
 import numpy as np
 from pandas.core.frame import DataFrame
 from cmath import nan
+from cmath import isnan as cmath_isnan
+
 import re
 from datetime import datetime
 from A000_dic_tache_attahement_chemin import *
@@ -26,7 +28,8 @@ df_Tahce = get_text_to_df( r'Resultat\res_003_id_nom_Tahce.txt')
 # pre-Filtrez les taches: si une tache contient des mot cle, elle est valide
 # ===================================================================
 for key_tache,row_tache in df_Tahce.iterrows():
-    print(key_tache)
+    if key_tache%1000 == 0:
+        print("pre=filter key_tache : ",key_tache)
     for key_tacheV,cleTacheV in dic_nomTacheV_cleTacheV.items():
         if cleTacheV.upper() in row_tache["nom_parent"].upper():
             df_Tahce.loc[key_tache,"valide"] = 1
@@ -41,6 +44,8 @@ with open( r"Observation\OB_004_tache_pre_filtre.csv","w",encoding="utf-8") as f
 # si oui , gardez-le; si non, le supprimer. 
 # ===================================================================
 for key_attachement,row_attachement in df_attachement.iterrows():
+    if key_attachement%1000 == 0:
+        print("pre=filter key_attachement : ",key_attachement)
     index_parentID = df_Tahce[(df_Tahce.id_parent==row_attachement["id_parent"])].index.tolist()
     df_attachement.loc[key_attachement,"valide"] = len(index_parentID)
 df_attachement = df_attachement.drop(df_attachement[(df_attachement['valide'] != 1)].index) 
@@ -95,18 +100,15 @@ dic_champs_cible_newNom = {     "nom projet":"nom projet",
                                 "📆 GO URBA" : "Date GO URBA",
                                 "📆 Dépôt" : "Date depot Accord"
 
-
-
 }
 
-# ===================================================================
-# Vérifier si les noms des objets sont en double ,Supprimez les doublons s'ils existent
-# select des champs et les renomer
-# ===================================================================
+# # ===================================================================
+# # Vérifier si les noms des objets sont en double ,Supprimez les doublons s'ils existent
+# # select des champs et les renomer
+# # ===================================================================
 df_projet = df_projet.drop_duplicates(subset=['nom projet'], keep='first')
 df_projet = df_projet.rename(columns=dic_champs_cible_newNom)
 df_projet = df_projet[list(dic_champs_cible_newNom.values())]
-
 
 # ===================================================================
 # Initialiser deux table vide
@@ -128,6 +130,7 @@ for key,value in dic_nomTacheV_cleTacheV.items(): # parcourir
 # Traverser/parcourir toutes les attachements, puis remplir <df_res>
 # ===================================================================
 for key_attachement,row_attachement in df_attachement.iterrows():
+    print("key attachement : ",key_attachement)
     try:
         # ===================================================================
         # Obtenez le nom de la pièce jointe, l'index/le nom/le lien de la tâche  à la quelle cette Pj est attachée.
@@ -194,14 +197,17 @@ for key_attachement,row_attachement in df_attachement.iterrows():
             # (1) Augmentez de 1 le nombre de pièces jointes conformes 
             # (2) mis a jour la <createdDate> de cette tache_resume，le nom de cette attachement, la lien de telechargement de cette attachement
             # si plusieurs attachements, prendre le plus récent
-            # ===================================================================   
+            # ===================================================================
+            print(flag_validation_attechement)   
             if flag_validation_attechement:
                 # (1) Augmentez le nombre de pièces jointes conformes de 1
                 df_res.loc[indexProjet, "conf_"+tache_resume] = 1 + df_res["conf_"+tache_resume][indexProjet]
                 # (2) mis a jour la <createdDate> de cette tache_resume，le nom de cette attachement,
                 #       la lien de telechargement de  cette attachement
-                if pd.isna(df_res["createdDate_"+tache_resume][indexProjet]):
+                
+                if cmath_isnan(df_res["createdDate_"+tache_resume][indexProjet]):
                     df_res.loc[indexProjet, "url_"+tache_resume] = row_attachement['url']
+                    print(row_attachement['url'])
                     df_res.loc[indexProjet, "createdDate_"+tache_resume] = row_attachement['createdDate']  
                     df_res.loc[indexProjet, "Nom_"+tache_resume] = row_attachement['nom_attachement']
                 elif datetime.strptime(df_res["createdDate_"+tache_resume][indexProjet], '%Y-%m-%dT%H:%M:%SZ') < datetime.strptime(row_attachement['createdDate'], '%Y-%m-%dT%H:%M:%SZ'):

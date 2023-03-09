@@ -1,0 +1,7 @@
+lanceer : 2023-03-08 14:25:48
+A001_get_projet.py marche ok vvvvvvvvvvvvvvvvvvvvvvvv 2023-03-08 14:26:07
+A002_get_attachement.py marche ok vvvvvvvvvvvvvvvvvvvvvvvv 2023-03-08 14:28:21
+A003_get_tache0032.py marche ok vvvvvvvvvvvvvvvvvvvvvvvv 2023-03-08 15:00:54
+A004_combine_1_2_3.py marche ok vvvvvvvvvvvvvvvvvvvvvvvv 2023-03-08 15:02:46
+A005_Contre_date_pdf.py marche pas !!!!!!!!!!!!!!!!!!!!!!! 
+A006_sharepoint.py marche ok vvvvvvvvvvvvvvvvvvvvvvvv 2023-03-08 15:02:56
