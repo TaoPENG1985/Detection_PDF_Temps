@@ -165,12 +165,12 @@ control_unCouple_conflit_Pdf(list_couple_pdf)
 
 # 15 ===================================================================
 # Date signature CA <-> pdf:["CONTRATHA"]  
-# -> date précédent: ["Date MES","Date Consuel", "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+# -> date précédent: ["Date MES","Date Consuel", "date_fin_Chantier","date_debut_Chantier", "Date reception (CARDI)","Date GO CONSTRUCTION",
 #  "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord","Date GO URBA","date_PMBAIL"]
 # =================================================================== 
 date_control = "Date signature CA"
 list_pdf_present = ["CONTRATHA"]
-list_date_prededente = ["Date MES","Date Consuel", "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+list_date_prededente = ["Date MES","Date Consuel", "date_fin_Chantier","date_debut_Chantier", "Date reception (CARDI)","Date GO CONSTRUCTION",
      "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord","Date GO URBA","date_PMBAIL"]
 control_date_pdf_datePrecedent(date_control,list_pdf_present,list_date_prededente)
 
@@ -179,7 +179,7 @@ control_date_pdf_datePrecedent(date_control,list_pdf_present,list_date_prededent
 #                              un de ["CONSUELV1","CONSUELV2"],
 #                              un de ["DOEV1","DOEV2"],
 #                               un de ["PVRV1","PVRV2"]]
-# -> date précédent: ["Date Consuel",  "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+# -> date précédent: ["Date Consuel",  "date_fin_Chantier","date_debut_Chantier", "Date reception (CARDI)","Date GO CONSTRUCTION",
 #     "date_BAIL","Date T0","Date Demande Racco","date_Accord"  ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 # =================================================================== 
 date_control = "Date MES"
@@ -187,13 +187,13 @@ list_pdf_present = ["MES",
                           ["CONSUELV1","CONSUELV2"],
                           ["DOEV1","DOEV2"],
                           ["PVRV1","PVRV2"]]
-list_date_prededente = ["Date Consuel",  "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+list_date_prededente = ["Date Consuel",  "date_fin_Chantier","date_debut_Chantier", "Date reception (CARDI)","Date GO CONSTRUCTION",
      "date_BAIL","Date T0","Date Demande Racco","date_Accord"  ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 control_date_pdf_datePrecedent(date_control,list_pdf_present,list_date_prededente)
 
 # 13 ===================================================================
 # 'Date Consuel' <-> pdf: un de ["CONSUELV1","CONSUELV2"]  
-# -> date précédent: [  "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+# -> date précédent: [  "date_fin_Chantier","date_debut_Chantier", "Date reception (CARDI)","Date GO CONSTRUCTION",
 #  "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 # =================================================================== 
 date_control = "Date Consuel"
@@ -207,11 +207,11 @@ control_date_pdf_datePrecedent(date_control,list_pdf_present,list_date_prededent
 #                               Pour DP : ["DAACT","CONSTATDP","CNRDP","PRODDP","ARRETEDP"]
 #                               Pour PD+DP: ["DOC","DAACT","CONSTATPC","CNRPC","CONSTATDP","CNRDP",
 #                                                  "PRODPC","ARRETEPC","PRODDP","ARRETEDP"] )
-# - > date précédent: ["date_debut_Chantier", "Date GO CONSTRUCTION",
+# - > date précédent: ["date_debut_Chantier", "Date reception (CARDI)","Date GO CONSTRUCTION",
 #  "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 # ===================================================================
 date_control = "date_fin_Chantier"
-list_date_prededente = ["date_debut_Chantier", "Date GO CONSTRUCTION", "date_BAIL",
+list_date_prededente = ["date_debut_Chantier", "Date reception (CARDI)","Date GO CONSTRUCTION", "date_BAIL",
                          "Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 
 # Pour PC
@@ -244,15 +244,28 @@ control_date_pdf_datePrecedent(date_control,list_pdf_present,list_date_prededent
 
 # 11 ===================================================================
 # date debut chantier <-> pdf: ["DOC"]
-# ->date precedents [ "Date GO CONSTRUCTION",
+# ->date precedents [ "Date reception (CARDI)","Date GO CONSTRUCTION",
 #     "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 # ===================================================================
 date_control = "date_debut_Chantier"
 list_pdf_present = ["DOC"]
-list_date_prededente = [ "Date GO CONSTRUCTION","date_BAIL","Date T0",
+list_date_prededente = [ "Date reception (CARDI)","Date GO CONSTRUCTION","date_BAIL","Date T0",
                          "Date Demande Racco","date_Accord" ,"Date depot Accord" ,
                          "Date GO URBA","date_PMBAIL"]
 control_date_pdf_datePrecedent(date_control,list_pdf_present,list_date_prededente)
+
+# 10+1 ===================================================================
+# 'Date reception (CARDI)' <-> pdf: ["CARDI"]
+# -> date précédent: [ "date_BAIL","Date T0",
+#                       "Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
+# =================================================================== 
+date_control = "Date reception (CARDI)"
+list_pdf_present =  ["CARDI"]
+list_date_prededente =[ "Date GO CONSTRUCTION","date_BAIL","Date T0",
+                         "Date Demande Racco","date_Accord" ,"Date depot Accord" ,
+                         "Date GO URBA","date_PMBAIL"]
+control_date_pdf_datePrecedent(date_control,list_pdf_present,list_date_prededente)
+
 
 # 10 ===================================================================
 # 'Date GO CONSTRUCTION' <-> pdf: []
@@ -662,9 +675,9 @@ for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
 # change format du temps tt mm dd -> dd mm tt (A modifier la methode pour changer de format)+
 # objet_date.strftime("%d-%m-%y")
 # ===================================================================
-#"Date MES","Date Consuel", "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+#"Date MES","Date Consuel", "date_fin_Chantier","date_debut_Chantier", "Date reception (CARDI)","Date reception (CARDI)","Date GO CONSTRUCTION",
    #  "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord","Date GO URBA","date_PMBAIL"
-list_date_champs =["Date MES","Date Consuel","date_Accord","Date GO CONSTRUCTION","Date T0",\
+list_date_champs =["Date MES","Date Consuel","date_Accord","Date reception (CARDI)","Date GO CONSTRUCTION","Date T0",\
                    "Date GO URBA","Date depot Accord","Date Demande Racco","+6mois","date_PMBAIL","date_fin_Chantier",\
                      "date_BAIL","date_debut_Chantier","date accord (PCM1)","Date signature CA",\
                      "date accord (PCM2)","date accord (PCM3)","date accord (Transf PC)",\
@@ -672,6 +685,14 @@ list_date_champs =["Date MES","Date Consuel","date_Accord","Date GO CONSTRUCTION
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
     for key_date in list_date_champs: # parcourir les combinaison
         if not (pd.isna(row_projet[key_date]) or   "❌" in (row_projet[key_date])): 
+            # try:
+                #  tt-mm-dd 
+                #   tt mm dd  00:00:00
+                #  dd mm tt 
+                #  dd mm tt 00:00:00 
+
+            # except:
+                
             if len(row_projet[key_date]) == 10:
                 str_temp = row_projet[key_date]
                 df_projet_lien.loc[key_projet,key_date] = str_temp[8:10] + str_temp[4:8] +str_temp[:4]
