@@ -198,7 +198,7 @@ control_date_pdf_datePrecedent(date_control,list_pdf_present,list_date_prededent
 # =================================================================== 
 date_control = "Date Consuel"
 list_pdf_present = [["CONSUELV1","CONSUELV2"]]
-list_date_prededente = [  "date_fin_Chantier","date_debut_Chantier", "Date GO CONSTRUCTION",
+list_date_prededente = [  "date_fin_Chantier","date_debut_Chantier", "Date reception (CARDI)","Date GO CONSTRUCTION",
      "date_BAIL","Date T0","Date Demande Racco","date_Accord" ,"Date depot Accord" ,"Date GO URBA","date_PMBAIL"]
 control_date_pdf_datePrecedent(date_control,list_pdf_present,list_date_prededente)
 
@@ -684,19 +684,16 @@ list_date_champs =["Date MES","Date Consuel","date_Accord","Date reception (CARD
                         "date accord (Transf DP)","Validite"]
 for key_projet,row_projet in df_projet_lien.iterrows(): # parcourir les projet
     for key_date in list_date_champs: # parcourir les combinaison
-        if not (pd.isna(row_projet[key_date]) or   "❌" in (row_projet[key_date])): 
-            # try:
-                #  tt-mm-dd 
-                #   tt mm dd  00:00:00
-                #  dd mm tt 
-                #  dd mm tt 00:00:00 
-
-            # except:
-                
-            if len(row_projet[key_date]) == 10:
-                str_temp = row_projet[key_date]
-                df_projet_lien.loc[key_projet,key_date] = str_temp[8:10] + str_temp[4:8] +str_temp[:4]
-
+        if not pd.isna(row_projet[key_date]):
+            if not "❌" in (row_projet[key_date]): 
+                if len(str(row_projet[key_date][:10]).split("-")[0]) == 2:
+                    # print('dd-mm-yyyy',row_projet[key_date][:10])
+                    date_obj = row_projet[key_date][:10]
+                elif len(str(row_projet[key_date][:10]).split("-")[0]) == 4:
+                    # print('yyyy-mm-dd',row_projet[key_date][:10])
+                    date_obj = datetime.strptime(row_projet[key_date][0:10], '%Y-%m-%d').strftime('%d-%m-%Y')
+                # print(row_projet[key_date], ' > ', date_obj)
+                df_projet_lien.loc[key_projet,key_date] = date_obj
 
 with open(r"Resultat\res_005_controle_date_pdf.txt","w",encoding="utf-8") as f:
     f.write(json.dumps( df_projet_lien.to_json(),ensure_ascii=False))

@@ -26,7 +26,7 @@ endTime = datetime.now()
 startime = endTime - mydelta
 list_temps = []
 # print(endTime.strftime("%Y-%m-%dT%H:%M:%SZ"))
-date_plusAcien =  datetime.strptime('2021-10-05 00:00:00', '%Y-%m-%d %H:%M:%S')
+date_plusAcien =  datetime.strptime('2010-10-05 00:00:00', '%Y-%m-%d %H:%M:%S')
 # print(date_plusAcien)
 
 for i in range(1,1000):
