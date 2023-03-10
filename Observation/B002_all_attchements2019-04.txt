@@ -1,0 +1,17 @@
+{
+  "kind": "attachments",
+  "data": [
+    {
+      "id": "IEACTCKNIYCXCRAL",
+      "authorId": "KUAFPVH4",
+      "name": "Parametre-PV Planner-V15042019.xlsx",
+      "createdDate": "2019-04-15T08:48:10Z",
+      "version": 1,
+      "type": "Wrike",
+      "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 30783,
+      "taskId": "IEACTCKNKQKFKYT7",
+      "url": "https://storage.www.wrike.com/extfile/eyJ0IjoiZmExIiwiYWxnIjoiSFMyNTYiLCJjdHkiOiJhcHBsaWNhdGlvblwvanNvbiJ9.eyJhIjoyNzIyMTI1LCJyIjoiVVMiLCJleHAiOjE2Nzg1MzUwMjYsImlhdCI6MTY3ODQ0ODYyNiwianRpIjoiOTEzMDkwNjcifQ.seBy_l4UnqXBE9rSrIwqkKPULJKDfY4nCKpUsUWYn-E/Parametre-PV+Planner-V15042019.xlsx"
+    }
+  ]
+}
